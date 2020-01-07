@@ -1,0 +1,18 @@
+The program segfault without parameters, say "No !" with a param
+
+$ gdb level0 42
+(gdb) disas main
+...
+   0x08048ed4 <+20>:	call   0x8049710 <atoi>
+   0x08048ed9 <+25>:	cmp    $0x1a7,%eax
+...
+
+atoi is called and there is a comp with the result of atoi and "0x1a7" (423)
+
+$ ./level10 423
+We have the shell
+
+Download the binary level0 with scp
+$ scp -P 4242 level0@192.168.1.28:/home/user/level0/level0 .
+
+open in Cutter, decompile and we can understand the source code (see source.c)
