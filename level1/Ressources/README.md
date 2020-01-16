@@ -134,7 +134,7 @@ Open with gdb-peda and put 80 bytes of 'a' (76 + 4 for overwrite EIP)
 	EIP: 0x61616161 ('aaaa')
 	...
 
-Good, the last 4 bytes will be the address of the function "run" for calling it instead of return address
+Good, the last 4 bytes is will be the address of the function "run" for calling it instead of return address
 
 The address of the "run" function is "0x08048444" has seen above
 

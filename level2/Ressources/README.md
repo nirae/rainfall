@@ -214,3 +214,11 @@ Try it!
 	file	    payload  peda-session-level2.txt  walkthrough
 
 We have a shell!
+
+Cleaner exploit
+
+```python
+
+
+
+```

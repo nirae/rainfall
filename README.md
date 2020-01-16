@@ -1,4 +1,4 @@
-# Snowcrash
+# Rainfall
 ## Second projet sécurité de l'École 42
 
 Rainfall est un iso de challenge légèrement plus complexe que Snow Crash qui vous plongera dans les méandres du reverse engineering et vous apprendra à reconstruire un code et à en comprendre son fonctionnement afin d'en dénicher les failles. Pourrez-vous atteindre le dernier level ?
@@ -23,4 +23,8 @@ Réseau Virtualbox NAT -> Redirection de port
 
 ### !!! SPOIL !!!
 
-- level0 :
+- level0 : Simple GDB check
+- level1 : Buffer overflow - call intern function
+- level2 : Buffer Overflow - use env variable - ret2ret method
+- level3 : Format string
+- level4 : 

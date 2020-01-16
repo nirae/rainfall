@@ -21,7 +21,7 @@ Start the program in GDB
 	   0x08048ed9 <+25>:	cmp    $0x1a7,%eax
 	...
 
-The function 'atoi' is called and there is a comp with the result of atoi and "0x1a7" (423)
+The function 'atoi' is called and there is a comp with the result of atoi and 0x1a7 (423)
 
 Try this number
 
