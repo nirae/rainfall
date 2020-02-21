@@ -20,6 +20,8 @@ First step - testing the program
 	(nil), (nil)
 	^C
 
+Hm, ok....
+
 Start in GDB
 
 	(gdb-peda)$ pdisas main
@@ -166,13 +168,13 @@ Start in GDB
 
 The program is more complex than others, need to translate it in C before trying to understand
 
-After (long long time) trying to translate in c, we can see interesting things in our pseudo c code
+After (long long time) trying to translate in C, we can see interesting things in our pseudo C code
 
-The program increase the size of 2 global variables (auth, service) with malloc, 10 by 10, when the input is "auth " or "service"
+The program increase the size of 2 global variables (auth and service) with malloc, 10 by 10, when the input is "auth " or "service"
 
 There is also a case when the input is "login", a check in the memory on auth+32, if the memory is not 0, the function "system" is called
 
-So, we can understand what we need to do : init the auth variable, increase the service variable until the service variable overwrite auth+32
+So, we can understand what we need to do : init the auth variable, increase the service variable until the service variable write at auth+32
 
 	$ ./level8
 	(nil), (nil)

@@ -125,3 +125,5 @@ Good! Let's keep stdin open for access the shell
 	whoami
 	level4
 	cat ~level4/.pass
+
+Script it for reproduice!

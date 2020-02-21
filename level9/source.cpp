@@ -3,6 +3,11 @@ class N {
 	int number;
 
 	// constructeur
+	/*
+	c++filt _ZN1NC2Ei = N::N(int)
+
+	
+	*/
 	N(int number) {
 		this->number = number;
 	}
@@ -26,6 +31,7 @@ int main(int ac,char **av) {
 	if (ac < 2) {
 		exit(1);
 	}
+
 
 	nclass_1 = new N(5);
 	nclass_2 = new N(6);

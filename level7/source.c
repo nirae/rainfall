@@ -18,11 +18,11 @@ int main(int ac, char **av) {
   char *str_2;
   FILE *pass;
 
-  str_1 = (char *)malloc(8);
+  str_1 = malloc(8);
   str_1[0] = 1;
   str_1[4] = malloc(8);
 
-  str_2 = (char *)malloc(8);
+  str_2 = malloc(8);
   str_2[0] = 2;
   str_2[4] = malloc(8);
 
