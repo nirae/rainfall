@@ -10,19 +10,19 @@ The program wait an input and print it
 
 Start it in GDB
 
-	(gdb-peda)$ pdisas main
+	(gdb)$ disas main
 	Dump of assembler code for function main:
-	   0x0804851a <+0>:	push   ebp
-	   0x0804851b <+1>:	mov    ebp,esp
-	   0x0804851d <+3>:	and    esp,0xfffffff0
-	   0x08048520 <+6>:	call   0x80484a4 <v>
+	   0x0804851a <+0>:		push   ebp
+	   0x0804851b <+1>:		mov    ebp,esp
+	   0x0804851d <+3>:		and    esp,0xfffffff0
+	   0x08048520 <+6>:		call   0x80484a4 <v>
 	   0x08048525 <+11>:	leave
 	   0x08048526 <+12>:	ret
 	End of assembler dump.
 
 The main call a function "v"
 
-	(gdb-peda)$ pdisas v
+	(gdb)$ disas v
 	Dump of assembler code for function v:
 	   0x080484a4 <+0>:		push   ebp
 	   0x080484a5 <+1>:		mov    ebp,esp
@@ -126,4 +126,4 @@ Good! Let's keep stdin open for access the shell
 	level4
 	cat ~level4/.pass
 
-Script it for reproduice!
+Script it for reproduce!

