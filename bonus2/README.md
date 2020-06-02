@@ -87,11 +87,12 @@ Start in GDB
 	End of assembler dump.
 
 
-Lot of things
+Lot of things:
 
-- 2 call to strncpy, maybe can overflow
+2 call to strncpy, maybe can overflow
 
-- 2 memcmp for compare an env variable "LANG" with "fi" and "nl":
+2 memcmp for compare an env variable "LANG" with "fi" and "nl":
+
 
 	0x080485bc <+147>:	mov    DWORD PTR [esp+0x8],0x2
 	0x080485c4 <+155>:	mov    DWORD PTR [esp+0x4],0x804873d <--- "fi"
@@ -105,8 +106,8 @@ Lot of things
 	0x08048602 <+217>:	mov    DWORD PTR [esp],eax
 	0x08048605 <+220>:	call   0x8048360 <memcmp@plt>
 
-- a call to "greetuser" function
 
+A call to "greetuser" function
 
 	gdb-peda$ pdisas greetuser
 	Dump of assembler code for function greetuser:

@@ -149,13 +149,13 @@ We can overwrite the puts call by "m" in the GOT using the strcpy overflow
 
 Get the address of puts in the GOT
 
-(gdb)$ info function puts
-All functions matching regular expression "puts":
+	(gdb)$ info function puts
+	All functions matching regular expression "puts":
 
 	Non-debugging symbols:
 	0x08048400  puts@plt
 
-(gdb)$ x/i 0x08048400
+	(gdb)$ x/i 0x08048400
 	0x8048400 <puts@plt>:	jmp    DWORD PTR ds:0x8049928
 
 The address is "0x08049928"
